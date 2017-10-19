@@ -10,10 +10,15 @@ public class BurgerMovement : MonoBehaviour
     public AudioClip m_EngineDriving;
     public float m_PitchRange = 0.2f;
     public float m_BoostDuration = 40.0f;
-    public string[] m_PickupItems = { "Fry", "Avo", "Ket", "Mush", "Soda" };
+    public static string[] m_PickupItems = { "Fry", "Avo", "Ket", "Mush", "Soda" };
     public GameObject FryLauncher;
     public GameObject Fry;
     public GameObject AvoLauncher;
+    public GameObject AvoPip;
+    public GameObject KetchupBottle;
+    public GameObject Mushroom;
+    public GameObject Soda;
+    public GameObject[] Wheels;
 
     private string m_MovementAxisName;
     private string m_TurnAxisName;
@@ -23,6 +28,24 @@ public class BurgerMovement : MonoBehaviour
     private float m_OriginalPitch;
     private float m_CurrentSpeed;
     private string m_PickupEquipped = null;
+
+    GameObject fryLauncher;
+    GameObject fryOne;
+    GameObject fryTwo;
+    GameObject fryThree;
+    GameObject avoLauncher;
+    GameObject avoPip;
+    GameObject ketchupBottle;
+    GameObject mushroom1;
+    GameObject mushroom2;
+    GameObject mushroom3;
+    private int m_MushroomCount = 0;
+    GameObject soda;
+    float Idlex = 0.01f;
+    bool[] bShoot = { false, false, false };
+    int iSelectedFry = 1;
+    private string m_ActivateAxisName;
+
 
     private void Awake()
     {
@@ -49,6 +72,7 @@ public class BurgerMovement : MonoBehaviour
     {
         m_MovementAxisName = "Vertical" + m_PlayerNumber;
         m_TurnAxisName = "Horizontal" + m_PlayerNumber;
+        m_ActivateAxisName = "Activate" + m_PlayerNumber;
     }
 
     private void Update()
@@ -57,13 +81,97 @@ public class BurgerMovement : MonoBehaviour
         m_MovementInputValue = Input.GetAxis(m_MovementAxisName);
         m_TurnInputValue = Input.GetAxis(m_TurnAxisName);
 
-        switch(m_PickupEquipped)
+        if (avoLauncher)
         {
-            case "FryLauncher":
+            foreach (Transform child in transform)
             {
-                break;
+                if (child.tag == "AvoLauncher")
+                {
+                    child.transform.localRotation = Quaternion.Euler(320f + Mathf.Sin(Time.time * 10f) * 45f, 180f, child.transform.localRotation.z);
+                }
             }
-            default:break;
+        }
+        if (m_MushroomCount > 0)
+        {
+            foreach(Transform child in transform)
+            {
+                if (child.tag == "Mushroom")
+                {
+                    Debug.Log("Rotation time");
+                    Debug.Log(child.transform.localRotation);
+                    child.transform.RotateAround(transform.position, new Vector3(0, 1, 0), 90f * Time.deltaTime);
+                    Debug.Log(child.transform.localRotation);
+                }
+            }
+        }
+
+        //shooting
+        switch (m_PickupEquipped)
+        {
+            case "Fry":
+                {
+                    if (Input.GetButtonDown(m_ActivateAxisName))
+                    {
+                        switch (iSelectedFry)
+                        {
+                            case 1:
+                                {
+                                    fryOne.transform.SetParent(null);
+                                    bShoot[0] = true;
+                                    iSelectedFry = 2;
+                                    break;
+                                }
+                            case 2:
+                                {
+                                    fryTwo.transform.SetParent(null);
+                                    bShoot[1] = true;
+                                    iSelectedFry = 3;
+                                    break;
+                                }
+                            case 3:
+                                {
+                                    fryThree.transform.SetParent(null);
+                                    fryLauncher.transform.SetParent(null);
+                                    m_PickupEquipped = null;
+                                    bShoot[2] = true;
+                                    break;
+                                }
+                            default: break;
+                        }
+                    }
+
+                    break;
+                }
+            default: break;
+        }
+        Shoot();
+
+        // Idle animation
+        Idlex += 0.5f;
+        foreach (Transform child in transform)
+        {
+            if (child.tag != "Wheel")
+            {
+                child.transform.Translate(new Vector3(0, Mathf.Sin(Idlex) / 60, 0));
+            }
+        }
+    }
+
+    private void Shoot()
+    {
+        if (bShoot[0] == true)
+        {
+            fryOne.transform.Translate(new Vector3(0, 0, 25) * Time.deltaTime);
+        }
+
+        if (bShoot[1] == true)
+        {
+            fryTwo.transform.Translate(new Vector3(0, 0, 25) * Time.deltaTime);
+        }
+
+        if (bShoot[2] == true)
+        {
+            fryThree.transform.Translate(new Vector3(0, 0, 25) * Time.deltaTime);
         }
     }
 
@@ -92,7 +200,7 @@ public class BurgerMovement : MonoBehaviour
         if (other.gameObject.CompareTag("Pickup") && m_PickupEquipped == null)
         {
             other.gameObject.SetActive(false);
-            int iRand = (int)Random.Range(0, 2);
+            int iRand = (int)Random.Range(0, 5);
             m_PickupEquipped = m_PickupItems[iRand];
             Debug.Log("You equipped " + m_PickupEquipped);
 
@@ -100,10 +208,16 @@ public class BurgerMovement : MonoBehaviour
             {
                 case "Fry":
                 {
-                    GameObject fryLauncher = Instantiate(FryLauncher) as GameObject;
-                    GameObject fryOne = Instantiate(Fry) as GameObject;
-                    GameObject fryTwo = Instantiate(Fry) as GameObject;
-                    GameObject fryThree = Instantiate(Fry) as GameObject;
+                    // Reset fry shooting.
+                    bShoot[0] = false;
+                    bShoot[1] = false;
+                    bShoot[2] = false;
+                    iSelectedFry = 1;
+
+                    fryLauncher = Instantiate(FryLauncher) as GameObject;
+                    fryOne = Instantiate(Fry) as GameObject;
+                    fryTwo = Instantiate(Fry) as GameObject;
+                    fryThree = Instantiate(Fry) as GameObject;
 
                     fryLauncher.transform.SetParent(gameObject.transform);
                     fryLauncher.transform.localPosition = new Vector3(-1.5f, 1.5f, 0f);
@@ -123,16 +237,69 @@ public class BurgerMovement : MonoBehaviour
 
                     break;
                 }
+
                 case "Avo":
-                    {
-                        GameObject avoLauncher = Instantiate(AvoLauncher) as GameObject;
+                {
+                    avoLauncher = Instantiate(AvoLauncher) as GameObject;
+                    avoPip = Instantiate(AvoPip) as GameObject;
 
-                        avoLauncher.transform.SetParent(gameObject.transform);
-                        avoLauncher.transform.localPosition = new Vector3(-1.5f, 1.5f, 0f);
-                        avoLauncher.transform.localRotation = Quaternion.Euler(180f, 0f, 90f);
+                    avoLauncher.transform.SetParent(gameObject.transform);
+                    avoLauncher.transform.localPosition = new Vector3(-1.9f, 2f, -0.75f);
+                    avoLauncher.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);
+                    avoLauncher.tag = "AvoLauncher";
 
-                        break;
-                    }
+                    avoPip.transform.SetParent(gameObject.transform);
+                    avoPip.transform.localPosition = new Vector3(-1.9f, 2.5f, 0.1f);
+                    avoPip.transform.localRotation = Quaternion.Euler(180f, 0f, 90f);
+
+                    break;
+                }
+
+                case "Ket":
+                {
+                    ketchupBottle = Instantiate(KetchupBottle) as GameObject;
+                    ketchupBottle.transform.SetParent(gameObject.transform);
+                    ketchupBottle.transform.localPosition = new Vector3(-2f, 1.5f, 0f);
+                    ketchupBottle.transform.localRotation = Quaternion.Euler(90f, 0f, 180f);
+
+                    break;
+                }
+
+                case "Mush":
+                {
+                    Debug.Log("Add dem mushies");
+                    mushroom1 = Instantiate(Mushroom) as GameObject;
+                    mushroom2 = Instantiate(Mushroom) as GameObject;
+                    mushroom3 = Instantiate(Mushroom) as GameObject;
+
+                    mushroom1.transform.SetParent(gameObject.transform);
+                    mushroom1.transform.localPosition = new Vector3(-2.5f, 1.5f, 0f);
+                    mushroom1.transform.localRotation = Quaternion.Euler(180f, 0f, 180f);
+                    mushroom1.tag = "Mushroom";
+
+                    mushroom2.transform.SetParent(gameObject.transform);
+                    mushroom2.transform.localPosition = new Vector3(2.5f, 1.5f, 0f);
+                    mushroom2.transform.localRotation = Quaternion.Euler(180f, 180f, 180f);
+                    mushroom2.tag = "Mushroom";
+
+                    mushroom3.transform.SetParent(gameObject.transform);
+                    mushroom3.transform.localPosition = new Vector3(0f, 1.5f, 2.5f);
+                    mushroom3.transform.localRotation = Quaternion.Euler(180f, 90f, 180f);
+                    mushroom3.tag = "Mushroom";
+
+                    m_MushroomCount = 3;
+                    break;
+                }
+
+                case "Soda":
+                {
+                    soda = Instantiate(Soda) as GameObject;
+
+                    soda.transform.SetParent(gameObject.transform);
+                    soda.transform.localPosition = new Vector3(-1.5f, 1.5f, 0f);
+                    soda.transform.localRotation = Quaternion.Euler(180f, 0f, 90f);
+                    break;
+                }
 
                 default:break;
             }
@@ -164,11 +331,9 @@ public class BurgerMovement : MonoBehaviour
 
         m_Rigidbody.MovePosition(m_Rigidbody.position + movement);
 
-        GameObject[] wheels = GameObject.FindGameObjectsWithTag("Wheel");
-        
-        foreach (GameObject wheel in wheels)
+        foreach (GameObject wheel in Wheels)
         {
-            wheel.transform.Rotate(new Vector3(0, 0, 45) * Time.deltaTime);
+            wheel.transform.Rotate(new Vector3(0, 0, (m_MovementInputValue * m_CurrentSpeed * 20)) * Time.deltaTime);
         }
     }
 
