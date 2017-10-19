@@ -259,8 +259,8 @@ public class BurgerMovement : MonoBehaviour
                 {
                     ketchupBottle = Instantiate(KetchupBottle) as GameObject;
                     ketchupBottle.transform.SetParent(gameObject.transform);
-                    ketchupBottle.transform.localPosition = new Vector3(-2f, 1.5f, 0f);
-                    ketchupBottle.transform.localRotation = Quaternion.Euler(90f, 0f, 180f);
+                    ketchupBottle.transform.localPosition = new Vector3(-2f, 1.5f, 0.5f);
+                    ketchupBottle.transform.localRotation = Quaternion.Euler(90f, 0f, 0f);
 
                     break;
                 }
