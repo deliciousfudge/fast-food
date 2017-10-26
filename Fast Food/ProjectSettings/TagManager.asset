@@ -9,6 +9,11 @@ TagManager:
   - Wheel
   - Mushroom
   - AvoLauncher
+  - Checkpoint1
+  - Checkpoint2
+  - Checkpoint3
+  - Checkpoint4
+  - Checkpoint5
   layers:
   - Default
   - TransparentFX
@@ -20,10 +25,10 @@ TagManager:
   - 
   - Ground
   - Players
-  - 
-  - 
-  - 
-  - 
+  - Player1UI
+  - Player2UI
+  - Player3UI
+  - Player4UI
   - 
   - 
   - 
