@@ -20,6 +20,8 @@ public class BurgerMovement : MonoBehaviour
     public GameObject Soda;
     public GameObject[] Wheels;
 
+    public Transform[] respawnPoints;
+
     private string m_MovementAxisName;
     private string m_TurnAxisName;
     private Rigidbody m_Rigidbody;
@@ -28,6 +30,7 @@ public class BurgerMovement : MonoBehaviour
     private float m_OriginalPitch;
     private float m_CurrentSpeed;
     private string m_PickupEquipped = null;
+    private BurgerLaps m_BurgerLaps;
 
     GameObject fryLauncher;
     GameObject fryOne;
@@ -49,6 +52,7 @@ public class BurgerMovement : MonoBehaviour
 
     private void Awake()
     {
+        m_BurgerLaps = gameObject.GetComponent<BurgerLaps>();
         m_Rigidbody = GetComponent<Rigidbody>();
         SetCurrentSpeed(m_StartingSpeed); 
     }
@@ -106,45 +110,69 @@ public class BurgerMovement : MonoBehaviour
         }
 
         //shooting
-        switch (m_PickupEquipped)
-        {
-            case "Fry":
-                {
-                    if (Input.GetButtonDown(m_ActivateAxisName))
-                    {
-                        switch (iSelectedFry)
-                        {
-                            case 1:
-                                {
-                                    fryOne.transform.SetParent(null);
-                                    bShoot[0] = true;
-                                    iSelectedFry = 2;
-                                    break;
-                                }
-                            case 2:
-                                {
-                                    fryTwo.transform.SetParent(null);
-                                    bShoot[1] = true;
-                                    iSelectedFry = 3;
-                                    break;
-                                }
-                            case 3:
-                                {
-                                    fryThree.transform.SetParent(null);
-                                    fryLauncher.transform.SetParent(null);
-                                    m_PickupEquipped = null;
-                                    bShoot[2] = true;
-                                    break;
-                                }
-                            default: break;
-                        }
-                    }
 
+        if (Input.GetButtonDown(m_ActivateAxisName))
+        {
+            Debug.Log("Boy howdy");
+            switch (m_PickupEquipped)
+            {
+                case "Fry":
+                {
+                    switch (iSelectedFry)
+                    {
+                        case 1:
+                        {
+                            fryOne.transform.SetParent(null);
+                            bShoot[0] = true;
+                            iSelectedFry = 2;
+                            break;
+                        }
+                        case 2:
+                        {
+                            fryTwo.transform.SetParent(null);
+                            bShoot[1] = true;
+                            iSelectedFry = 3;
+                            break;
+                        }
+                        case 3:
+                        {
+                            fryThree.transform.SetParent(null);
+                            fryLauncher.transform.SetParent(null);
+                            m_PickupEquipped = null;
+                            bShoot[2] = true;
+                            break;
+                        }
+
+                        default: break;
+                    }
+                    Shoot();
                     break;
                 }
-            default: break;
+
+                case "Avo":
+                {
+                    Debug.Log("Avo activated!");
+                    break;
+                }
+                case "Ket":
+                {
+                    Debug.Log("Ketchup activated!");
+                    break;
+                }
+                case "Mush":
+                {
+                    Debug.Log("Mushroom activated!");
+                    break;
+                }
+                case "Soda":
+                {
+                    Debug.Log("Soda activated!");
+                    break;
+                }
+
+                default: break;
+            }
         }
-        Shoot();
 
         // Idle animation
         Idlex += 0.5f;
@@ -304,6 +332,12 @@ public class BurgerMovement : MonoBehaviour
                 default:break;
             }
         }
+
+        if (other.gameObject.CompareTag("Net"))
+        {
+            Debug.Log(m_BurgerLaps.currentCheckpoint);
+            gameObject.transform.position = respawnPoints[m_BurgerLaps.currentCheckpoint].transform.position;
+        };
     }
 
     private void FixedUpdate()

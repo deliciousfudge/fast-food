@@ -5,7 +5,9 @@ using UnityEngine;
 public class BurgerPositions : MonoBehaviour {
 
 public GameObject[] Burgers;
-private BurgerLaps CurrentBurger;
+private BurgerLaps Lap;
+private BurgerCheckpoint Checkpoint;
+private List<int> ProgressValues;
 
 	// Use this for initialization
 	void Start ()
@@ -18,7 +20,8 @@ private BurgerLaps CurrentBurger;
 	{
 		foreach (GameObject Burger in Burgers)
 		{
-			CurrentBurger = Burger.GetComponentInChildren<BurgerLaps>();
+			Checkpoint = Burger.GetComponentInChildren<BurgerCheckpoint>();
+            ProgressValues.Add(Checkpoint.GetProgressValue());
 		}
 	}
 }

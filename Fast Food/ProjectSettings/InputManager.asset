@@ -266,7 +266,7 @@ InputManager:
     descriptiveName: Vertical gamepad axis for player 4
     descriptiveNegativeName: 
     negativeButton: 
-    positiveButton: e
+    positiveButton: 
     altNegativeButton: 
     altPositiveButton: 
     gravity: 0
@@ -298,7 +298,7 @@ InputManager:
     descriptiveName: Vertical gamepad axis for player 4
     descriptiveNegativeName: 
     negativeButton: 
-    positiveButton: joystick 2 button 0
+    positiveButton: e
     altNegativeButton: 
     altPositiveButton: 
     gravity: 0
@@ -306,7 +306,7 @@ InputManager:
     sensitivity: 1
     snap: 0
     invert: 0
-    type: 2
+    type: 0
     axis: 2
     joyNum: 10
   - serializedVersion: 3

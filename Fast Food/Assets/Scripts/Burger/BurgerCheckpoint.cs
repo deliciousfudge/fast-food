@@ -10,6 +10,9 @@ public class BurgerCheckpoint : MonoBehaviour
     public Text LapLabel;
     public Text PositionLabel;
     private BurgerLaps Burger;
+    private int ProgressValue = 0;
+    private static int LAP_VALUE = 1000;
+    private static int CHECKPOINT_VALUE = 100;
 
     void Start()
     {
@@ -30,6 +33,7 @@ public class BurgerCheckpoint : MonoBehaviour
             if (Burger.currentCheckpoint + 1 < Burger.checkpointA.Length)
             {
                 Burger.currentCheckpoint++;
+                ProgressValue += CHECKPOINT_VALUE;
             }
             else
             {
@@ -38,7 +42,13 @@ public class BurgerCheckpoint : MonoBehaviour
                 
                 // Since we've exhausted all available checkpoints, we also want to increase the lap count 
                 Burger.currentLap++;
+                ProgressValue += LAP_VALUE;
             }
         }
+    }
+
+    public int GetProgressValue()
+    {
+        return ProgressValue;
     }
 }
